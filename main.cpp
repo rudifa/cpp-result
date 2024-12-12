@@ -24,25 +24,29 @@ Result<int, NetworkError> fetchUnreadCount(const std::string &url)
 
 int main()
 {
-    auto result = fetchUnreadCount("https://example.com");
+    std::vector<std::string> urls = {"https://example.com", "https://no-such-url.com"};
 
-    if (result.isSuccess())
+    for (const auto &url : urls)
     {
-        std::cout << result.getValue() << " unread messages." << std::endl;
-    }
-    else
-    {
-        std::cout << "Error: " << result.getError().message << std::endl;
-    }
+        auto result = fetchUnreadCount(url);
 
-    // Using map to transform the success value
-    auto doubledResult = result.map([](int count)
-                                    { return count * 2; });
+        if (result.isSuccess())
+        {
+            std::cout << url << ": Success: " << result.getValue() << " unread messages." << std::endl;
+        }
+        else
+        {
+            std::cout << url << ": Error: " << result.getError().message << std::endl;
+        }
 
-    if (doubledResult.isSuccess())
-    {
-        std::cout << "Doubled: " << doubledResult.getValue() << std::endl;
+        // Using map to transform the success value
+        auto doubledResult = result.map([](int count)
+                                        { return count * 2; });
+
+        if (doubledResult.isSuccess())
+        {
+            std::cout << "Doubled: " << doubledResult.getValue() << std::endl;
+        }
     }
-
     return 0;
 }
